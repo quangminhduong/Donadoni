@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Common head content is included from common.html  -->
+    <th:block th:include="/views/fragments/common.html :: commonhead"></th:block>
+
+    <!-- Include custom head for this head after this line -->
+    <title>Page Title</title>
+
+    <!-- You can create a css with styles only for this page -->
+    <!-- <link href="/css/yourpage.css" rel="stylesheet">-->
+</head>
+
+<body>
+
+<!-- Nav bar is located in common.html -->
+<header th:replace="/views/fragments/common.html :: header"></header>
+
+<!-- Begin THIS page content -->
+<main role="main" class="container ">
+    <div id="movie-info">
+        <h1 th:text="${movie.title}">Title</h1>
+        <img th:src="'http://localhost:7000/images/' + ${movie.title} + '.jpg'" style="width:30%">
+        <h2><a th:if="${role == 'ADMIN'}" class="btn btn-warning" th:href="@{/movies/{id}/edit(id=${movie.id})}"
+               role="button">Edit Movie</a></h2>
+        <h2><a th:if="${role == 'ADMIN'}" class="btn btn-success" href="/session/new" role="button">Add Session</a></h2>
+        <h2>Release year: <span th:text="${movie.releaseYear}">2020</span></h2>
+        <p th:text="${movie.synopsis}">Synopsis comes here</p>
+    </div>
+    <div id="movie-sessions">
+        <h3>Showing Sessions</h3>
+        <div class="card-columns">
+            <div th:each="sessions : ${sessions}" class="card" style="background-color : gainsboro">
+                <div class="card-body" style="height:120px">
+                    <input th:value="${sessions.showing}" type="datetime-local" disabled>
+                    <a th:if="${sessions.status == 'OPEN'}" class="btn btn-success"
+                       th:href="@{/session/{id}/{session_id}/booking(id=${movie.id},session_id=${sessions.session_id})}">Get
+                        Ticket</a>
+                    <form th:if="${sessions.status == 'FULL'}" action="/check" method="post">
+                        <div class="form-group">
+                            <input type="hidden" name="session_id" th:value="${sessions.session_id}">
+                            <input type="hidden" class="form-control" id="amount" name="amount" th:value="1">
+                            <button type="submit" class="btn btn-danger" th:text="${sessions.status}">status</button>
+                        </div>
+                    </form>
+                    <a th:if="${sessions.status == 'SCHEDULED'}" class="btn btn-warning" th:text="${sessions.status}">status</a>
+                    <a th:if="${sessions.status == 'CLOSED'}" class="btn btn-danger"
+                       th:text="${sessions.status}" style="color:#ffffff">CLOSED</a>
+                    <a th:if="${sessions.status == 'CANCELED'}" class="btn btn-danger" th:text="${sessions.status}">CANCELED</a>
+                </div>
+                <h2><a th:if="${role == 'ADMIN'}" class="btn btn-warning"
+                       th:href="@{/session/{session_id}/edit(session_id=${sessions.session_id})}" role="button">Edit
+                    Session</a></h2>
+                <h2 th:if="${sessions.status != 'CLOSED'}">
+                    <a th:if="${role == 'ADMIN'}" class="btn btn-danger"
+                       th:href="@{/session/{session_id}/cancel(session_id=${sessions.session_id})}" role="button">Cancel
+                        Session</a></h2>
+            </div>
+        </div>
+    </div>
+    <h3>Reviews</h3>
+    <h3 th:unless="${avg_rating==5}" class="float-right"
+        th:each="i: ${#numbers.sequence(avg_rating,4)}" style="color: #FFD600">☆</h3>
+    <h3 th:unless="${avg_rating==0}" class="float-right" th:each="i: ${#numbers.sequence(1, avg_rating)}"
+        style="color: #FFD600">★</h3>
+    <p class="float-right" th:text="${count + ' reviews '}"></p>
+    <a th:unless="${user_logged_in}" class="btn btn-success" type="button" data-toggle="modal"
+       data-target="#login">Write a review</a>
+    <a th:if="${user_logged_in && user_review.comments == null}" class="btn btn-success" type="button"
+       data-toggle="modal"
+       data-target="#form">Write a review</a>
+    <a th:if="${user_logged_in && user_review.comments != null}" class="btn btn-warning" type="button"
+       data-toggle="modal"
+       data-target="#form_edit">Edit review</a>
+    <br><br>
+    <div class="modal" id="login">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Please Login to continue</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <a class="btn btn-success" href="/login">Login</a>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="form">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Your review</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form action="/review/new" method="post">
+                        <div class="form-group">
+                            <div class="rating">
+                                <input type="radio" name="rating" value="5" id="A5" required><label
+                                    for="A5">☆</label>
+                                <input type="radio" name="rating" value="4" id="A4"><label for="A4">☆</label> <input
+                                    type="radio" name="rating" value="3" id="A3"><label for="A3">☆</label> <input
+                                    type="radio" name="rating" value="2" id="A2"><label for="A2">☆</label> <input
+                                    type="radio" name="rating" value="1" id="A1"><label for="A1">☆</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="review">Review:</label>
+                            <textarea class="form-control" rows="5" id="review" name="review"></textarea>
+                        </div>
+                        <input type="hidden" id="cinema_id" name="cinema_id" th:value="${cinema_id}">
+                        <input type="hidden" id="movie_id" name="movie_id" th:value="${movie.id}">
+                        <input type="hidden" id="user_id" name="user_id" th:value="${user.id}">
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="form_edit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit review</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form action="/review/edit" method="post">
+                        <div class="form-group">
+                            <div class="rating">
+                                <input type="radio" name="rating" value="5" id="5" required><label
+                                    for="A5">☆</label>
+                                <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input
+                                    type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input
+                                    type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input
+                                    type="radio" name="rating" value="1" id="1"><label for="1">☆</label>
+                                <script>
+                                 var user_rating = [[${user_review.rating}]];
+                                 document.getElementById(user_rating).checked = true;
+                                </script>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="review_edit">Edit Review:</label>
+                            <textarea class="form-control" rows="5" name="review" id="review_edit"
+                                      th:text="${user_review.comments}"></textarea>
+                        </div>
+                        <input type="hidden" name="review_id" th:value="${user_review.review_id}">
+                        <input type="hidden" name="cinema_id" th:value="${cinema_id}">
+                        <input type="hidden" name="movie_id" th:value="${movie.id}">
+                        <input type="hidden" name="user_id" th:value="${user.id}">
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" th:each="review:${reviews}" th:with="user_id=${review.user_id}">
+        <div th:each="user:${users}" th:if="${user.id == review.user_id}" }>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <img src="https://image.ibb.co/jw55Ex/def_face.jpg" class="img img-rounded img-fluid"/>
+                    </div>
+                    <div class="col-md-10">
+                        <p>
+                        <h5 class="float-left"
+                            th:text="${user.name}"><strong>Name</strong></h5>
+                        <h3 th:unless="${review.rating==5}" class="float-right"
+                            th:each="i: ${#numbers.sequence(review.rating,4)}" style="color: #FFD600">☆</h3>
+                        <h3 class="float-right" th:each="i: ${#numbers.sequence(1, review.rating)}"
+                            style="color: #FFD600">★</h3>
+
+
+                        </p>
+                        <div class="clearfix"></div>
+                        <p th:text="${review.comments}"></p>
+                        <a class="float-right btn text-white btn-primary" href="#"><i class="fa fa-thumbs-up"
+                                                                                      th:text="' '+ ${review.likes}"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    </h2>
+    </div>
+</main>
+<!-- End THIS page content -->
+
+
+<!-- Footer is located in common.html -->
+<footer class="footer" th:replace="/views/fragments/common.html :: footer"></footer>
+
+<!-- Bootstrap Scripts  -->
+<th:block th:include="/views/fragments/common.html :: scripts"></th:block>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Common head content is included from common.html  -->
+    <th:block th:include="/views/fragments/common.html :: commonhead"></th:block>
+
+    <!-- Include custom head for this head after this line -->
+    <title>Page Title</title>
+
+    <!-- You can create a css with styles only for this page -->
+    <!-- <link href="/css/yourpage.css" rel="stylesheet">-->
+</head>
+
+<body>
+
+<!-- Nav bar is located in common.html -->
+<header th:replace="/views/fragments/common.html :: header"></header>
+
+<!-- Begin THIS page content -->
+<main role="main" class="container ">
+    <h2>Booking Details</h2>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-5">
+
+                <h4 class="card-title" th:text="'Movie: '+${movie.title}">Card title</h4>
+                <img th:src="'/images/' + ${movie.title} + '.jpg'" style="width:100%">
+            </div>
+            <div class="col-sm-6">
+                <br><br>
+                <div class="container">
+                    <h4 th:text="${movie.releaseYear}">Release</h4>
+                    <p class="card-text" th:text="${movie.synopsis}">Synopsis</p>
+                </div>
+                <br><br>
+                <div class="container">
+                    <h4> Cinema: <input style="all:unset; color: green" th:value="${cinema.cinema_name}" type="text"
+                                        disabled></h4>
+                    <h4> Showing time: <input style="all:unset; color: green" th:value="${session1.showing}"
+                                              type="datetime-local" disabled></h4>
+                    <h4>Seat ID: </h4>
+                    <div th:each="reservation:${reservations}" class="row">
+                        <div class="col-sm-6">
+                            <h3 th:text="${reservation.seat_id}"></h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <a type="button" th:href="@{/reservation/{reservation_id}/confirm(reservation_id=${reservation.reservation_id})}" class="btn btn-danger">Cancel Ticket</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</main>
+<!-- End THIS page content -->
+
+
+<!-- Footer is located in common.html -->
+<footer class="footer" th:replace="/views/fragments/common.html :: footer"></footer>
+
+<!-- Bootstrap Scripts  -->
+<th:block th:include="/views/fragments/common.html :: scripts"></th:block>
+</body>
+</html>

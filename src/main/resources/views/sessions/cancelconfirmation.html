@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Common head content is included from common.html  -->
+    <th:block th:include="/views/fragments/common.html :: commonhead"></th:block>
+
+    <!-- Include custom head for this head after this line -->
+    <title>Page Title</title>
+
+    <!-- You can create a css with styles only for this page -->
+    <!-- <link href="/css/yourpage.css" rel="stylesheet">-->
+</head>
+
+<body>
+
+<!-- Nav bar is located in common.html -->
+<header th:replace="/views/fragments/common.html :: header"></header>
+
+<!-- Begin THIS page content -->
+<main role="main" class="container ">
+    <h1>Delete Session</h1>
+    <div th:unless="${seats == 0}" class="jumbotron">
+        <h2 th:text="'There are curently ' + ${seats} + 'ticket(s) booked'"></h2>
+        <h2>Do you want to Cancel this session? This session's status will be set to Canceled and every customer who has
+            booked this session will be notified.</h2>
+    </div>
+    <div th:if="${seats == 0}" class="jumbotron">
+        <h2>There are currently no ticket booked for this session. Do you want to completely delete it from the database?</h2>
+    </div>
+        <form th:action="@{/session/delete}" method="post">
+            <input type="hidden" th:value="${this_session.session_id}" name="session_id">
+            <button type="submit" class="btn btn-danger">Confirm</button>
+        </form>
+</main>
+<!-- End THIS page content -->
+
+
+<!-- Footer is located in common.html -->
+<footer class="footer" th:replace="/views/fragments/common.html :: footer"></footer>
+
+<!-- Bootstrap Scripts  -->
+<th:block th:include="/views/fragments/common.html :: scripts"></th:block>
+</body>
+</html>

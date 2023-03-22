@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Common head content is included from common.html  -->
+    <th:block th:include="/views/fragments/common.html :: commonhead"></th:block>
+
+    <!-- Include custom head for this head after this line -->
+    <title>Page Title</title>
+
+
+    <!-- You can create a css with styles only for this page -->
+    <!-- <link href="/css/yourpage.css" rel="stylesheet">-->
+</head>
+
+<body>
+
+<!-- Nav bar is located in common.html -->
+<header th:replace="/views/fragments/common.html :: header"></header>
+
+<!-- Begin THIS page content -->
+<main role="main" class="container ">
+    <h1 th:text="'Movies Currently Playing in ' + ${cinema.cinema_name}">Movies Currently Playing in our Theaters </h1>
+    <a th:unless="${cinema.cinema_id==0}" th:if="${role == 'ADMIN'}" class="btn btn-info"
+       th:href="@{/cinemas/{cinema_id}/edit(cinema_id=${cinema.cinema_id})}"
+       role="button">Edit Cinema</a>
+    <a th:unless="${cinema.cinema_id==0}" th:if="${role == 'ADMIN'}" class="btn btn-success"
+       href="/cinemas/new"
+       role="button">Add Cinema</a>
+    <a th:unless="${cinema.cinema_id==0}" th:if="${role == 'ADMIN'}" class="btn btn-warning"
+       th:href="@{/cinemas/{id}/delete(id=${cinema.cinema_id})}"
+       role="button">Delete Cinema</a>
+    <button th:if="${cinema.cinema_id == 0 and role == 'ADMIN'}" type="button" class="btn btn-warning"
+            data-toggle="modal" data-target="#myModal2"></a>>
+        Edit Cinema
+    </button>
+    <div class="modal" id="myModal2">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Please select a Cinema to continue</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-primary dropdown-toggle"
+                                data-toggle="dropdown">
+                            Select Cinema
+                        </button>
+                        <div class="dropdown-menu">
+                            <a th:each="cinema:${cinemas}" class="dropdown-item"
+                               th:href="@{/cinemas/{cinema_id}/edit(cinema_id=${cinema.cinema_id})}"
+                               th:text=" ${cinema.cinema_name}">Cinema name</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <a th:if="${role == 'ADMIN'}" class="btn btn-success" href="/movies/new" role="button">Create a new
+        Movie</a>
+    <a th:if="${role == 'ADMIN'}" class="btn btn-success" href="/session/new" role="button">Create a new
+        Session</a>
+
+
+    <div class="card-columns">
+        <div th:each="movie : ${movies}" class="card" style="height:730px">
+            <div class="card-body">
+                <h4 class="card-title" th:text="${movie.title}">Card title</h4>
+                <img th:src="'/images/' + ${movie.title} + '.jpg'" style="width:100%">
+                <br><br>
+                <h6 class="card-subtitle mb-2 text-muted" th:text="${movie.releaseYear}">Card subtitle</h6>
+                <p class="card-text" th:text="${#strings.abbreviate(movie.synopsis,120)}">Synopsis</p>
+                <button th:if="${cinema.cinema_id}==0" type="button" class="btn btn-outline-info card-link"
+                        data-toggle="modal" data-target="#myModal1"></a>
+                    See More
+                </button>
+                <div class="modal" id="myModal1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Please select a Cinema to continue</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-primary dropdown-toggle"
+                                            data-toggle="dropdown">
+                                        Select Cinema
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a th:each="cinema:${cinemas}" class="dropdown-item"
+                                           th:href="@{/movies/cinema/{cinema_id}(cinema_id=${cinema.cinema_id})}"
+                                           th:text=" ${cinema.cinema_name}">Cinema name</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal footer -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <a th:unless="${cinema.cinema_id}==0"
+                   th:href="@{/movie/{cinema_id}/{movie_id}/(cinema_id = ${cinema.cinema_id},movie_id=${movie.id})}"
+                   class="btn btn-outline-info card-link">See More</a>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- End THIS page content -->
+
+
+<!-- Footer is located in common.html -->
+<footer class="footer" th:replace="/views/fragments/common.html :: footer"></footer>
+
+<!-- Bootstrap Scripts  -->
+<th:block th:include="/views/fragments/common.html :: scripts"></th:block>
+</body>
+</html>

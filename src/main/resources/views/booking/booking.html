@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Common head content is included from common.html  -->
+    <th:block th:include="/views/fragments/common.html :: commonhead"></th:block>
+
+    <!-- Include custom head for this head after this line -->
+    <title>Page Title</title>
+
+    <!-- You can create a css with styles only for this page -->
+    <!-- <link href="/css/yourpage.css" rel="stylesheet">-->
+</head>
+
+<body>
+
+<!-- Nav bar is located in common.html -->
+<header th:replace="/views/fragments/common.html :: header"></header>
+
+<!-- Begin THIS page content -->
+<main role="main" class="container ">
+    <div class="jumbotron">
+        <h1>Booking tickets for:</h1>
+        <h2 th:text="'Movie: '+${movie.title}">Title</h2>
+        <h2 th:text="'Time: ' + ${time}">Time</h2>
+        <h2 th:text="'There are ' + ${this_session.available-seats}+' Tickets Available for this Session.'">Tickets</h2>
+        <form action="/check" method="post">
+            <div class="form-group">
+                <input type="hidden" name="session_id" th:value="${this_session.session_id}">
+                <h3>Number of Booking Tickets:</h3>
+                <input type="number" class="form-control" placeholder="Enter amount" id="amount" name="amount" required>
+                <br>
+                <button type="submit" class="btn btn-primary">Check availability</button>
+            </div>
+        </form>
+    </div>
+</main>
+<!-- End THIS page content -->
+
+
+<!-- Footer is located in common.html -->
+<footer class="footer" th:replace="/views/fragments/common.html :: footer"></footer>
+
+<!-- Bootstrap Scripts  -->
+<th:block th:include="/views/fragments/common.html :: scripts"></th:block>
+</body>
+</html>

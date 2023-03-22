@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Common head content is included from common.html  -->
+    <th:block th:include="/views/fragments/common.html :: commonhead"></th:block>
+
+    <!-- Include custom head for this head after this line -->
+    <title>Page Title</title>
+
+    <!-- You can create a css with styles only for this page -->
+    <!-- <link href="/css/yourpage.css" rel="stylesheet">-->
+</head>
+
+<body>
+
+<!-- Nav bar is located in common.html -->
+<header th:replace="/views/fragments/common.html :: header"></header>
+
+<!-- Begin THIS page content -->
+<main role="main" class="container ">
+        <h2>My Bookings</h2>
+    <br>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Movie</th>
+                <th>Time</th>
+                <th>Cinema</th>
+                <th>Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr  th:each="session1:${sessions}">
+                <td th:text="${movies[session1.movie_id-1].title}">Movie</td>
+                <td><input style="all:unset" th:value="${session1.showing}" type="datetime-local" disabled></td></td>
+                <td th:text="${cinemas[session1.cinema_id-1].cinema_name}">Cinema</td>
+                <td th:text="${amount.get(session1.session_id)}">Amount</td>
+                <td><a type="button" th:href="@{/user/{user_id}/bookings/{session_id}(user_id=${user.id}, session_id=${session1.session_id})}" class="btn btn-info">Details</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+<!-- End THIS page content -->
+
+
+<!-- Footer is located in common.html -->
+<footer class="footer" th:replace="/views/fragments/common.html :: footer"> </footer>
+
+<!-- Bootstrap Scripts  -->
+<th:block th:include="/views/fragments/common.html :: scripts"></th:block>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Common head content is included from common.html  -->
+    <th:block th:include="/views/fragments/common.html :: commonhead"></th:block>
+
+    <!-- Include custom head for this head after this line -->
+    <title>Page Title</title>
+    <!-- You can create a css with styles only for this page -->
+    <!-- <link href="/css/yourpage.css" rel="stylesheet">-->
+</head>
+
+<body>
+
+<!-- Nav bar is located in common.html -->
+<header th:replace="/views/fragments/common.html :: header"></header>
+
+<!-- Begin THIS page content -->
+<main role="main" class="container ">
+    <div th:if="${accept}" class="jumbotron">
+        <h1>Tickets are available</h1>
+        <div class="container" th:if="${user_logged_in}">
+            <form action="booking/payment" method="post">
+                <div class="form-group">
+                    <input type="hidden" name="user_id" th:value="${user.id}">
+                    <input type="hidden" name="session_id" th:value="${this_session.session_id}">
+                    <input type="hidden" name="amount" th:value="${amount}">
+                    <button type="submit" class="btn btn-success">Proceed to payment</button>
+                </div>
+            </form>
+        </div>
+        <div class="container" th:unless="${user_logged_in}">
+            <div class="container">
+                <h2>Log in to confirm your Booking.</h2>
+                <a class="btn btn-success" href="/login">Login</a>
+            </div>
+            <div class="container">
+                <h2>Or enter your details below to create an account:</h2>
+                <form action="/booking/register" method="post">
+                    <div class="form-group">
+                        <input type="hidden" name="session_id" th:value="${this_session.session_id}">
+                        <input type="hidden" name="amount" th:value="${amount}">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" class="form-control" id="name" placeholder="Enter name" name="name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pwd">Password:</label>
+                        <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign up</button>
+                    <a class="btn btn-danger" onclick="goBack()" role="button">Go Back</a>
+                </form>
+            </div>
+        </div>
+
+
+    </div>
+    -
+    <div th:unless="${accept}" class="jumbotron">
+        <h1>Not enough available tickets</h1>
+        <h2 align="left"><a class="btn btn-danger" onclick="goBack()" role="button">Go Back</a></h2>
+        <form th:if="${user_logged_in}" action="/waitlist" method="post">
+            <div class="form-group">
+                <input type="hidden" name="user_id" th:value="${user.id}">
+                <input type="hidden" name="session_id" th:value="${this_session.session_id}">
+                <button type="submit" class="btn btn-warning">Get on Waitlist</button>
+            </div>
+        </form>
+        <h2 th:unless="${user_logged_in}">Please log in to get on a Waitlist</h2>
+    </div>
+</main>
+<!-- End THIS page content -->
+
+
+<!-- Footer is located in common.html -->
+<footer class="footer" th:replace="/views/fragments/common.html :: footer"></footer>
+
+<!-- Bootstrap Scripts  -->
+<th:block th:include="/views/fragments/common.html :: scripts"></th:block>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Common head content is included from common.html  -->
+    <th:block th:include="/views/fragments/common.html :: commonhead"></th:block>
+
+    <!-- Include custom head for this head after this line -->
+    <title>Page Title</title>
+
+    <!-- You can create a css with styles only for this page -->
+    <!-- <link href="/css/yourpage.css" rel="stylesheet">-->
+</head>
+
+<body>
+
+<!-- Nav bar is located in common.html -->
+<header th:replace="/views/fragments/common.html :: header"></header>
+
+<!-- Begin THIS page content -->
+<main role="main" class="container ">
+    <a th:if="${role == 'ADMIN'}" class="btn btn-success"
+       href="/cinemas/new"
+       role="button">Add Cinema</a>
+
+    <div class="card-columns">
+        <div th:each="cinema : ${cinemas}" class="card" style="height:500px">
+            <div class="card-body">
+                <h4 class="card-title" th:text="${cinema.cinema_name}">Card title</h4>
+                <a th:if="${role == 'ADMIN'}" class="btn btn-info"
+                   th:href="@{/cinemas/{cinema_id}/edit(cinema_id=${cinema.cinema_id})}"
+                   role="button">Edit Cinema</a>
+                <a th:if="${role == 'ADMIN'}" class="btn btn-warning"
+                   th:href="@{/cinemas/{id}/delete(id=${cinema.cinema_id})}"
+                   role="button">Delete Cinema</a>
+                <img th:src="'/images/cinemas/' + ${cinema.cinema_id} + '.jpg'" style="width:100%">
+                <br><br>
+                <h6 class="card-subtitle mb-2 text-muted" th:text="'Address: '+${cinema.cinema_address}">Card
+                    subtitle</h6>
+                <h6  class="card-text" th:text="'Phone ' + ${cinema.cinema_phone}">Phone</h6>
+                <a class="btn btn-info"
+                   th:href="@{/movies/cinema/{cinema_id}/(cinema_id=${cinema.cinema_id})}"
+                   role="button">Now Showing</a>
+
+            </div>
+        </div>
+    </div>
+
+
+
+</main>
+<!-- End THIS page content -->
+
+
+<!-- Footer is located in common.html -->
+<footer class="footer" th:replace="/views/fragments/common.html :: footer"></footer>
+
+<!-- Bootstrap Scripts  -->
+<th:block th:include="/views/fragments/common.html :: scripts"></th:block>
+</body>
+</html>
